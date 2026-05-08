@@ -1,5 +1,5 @@
 <script setup>
-import NotificationBell from '@/Components/Notifications/NotificationBell.vue';
+import AppHeader from '@/Components/Layout/AppHeader.vue';
 import PostFilters from '@/Components/Posts/PostFilters.vue';
 import PostListPaginated from '@/Components/Posts/PostListPaginated.vue';
 import { router } from '@inertiajs/vue3';
@@ -59,24 +59,25 @@ function resetFilters() {
 </script>
 
 <template>
-    <main class="mx-auto max-w-4xl px-6 py-12">
-        <div class="flex items-start justify-between">
+    <div class="min-h-screen bg-gray-50">
+        <AppHeader />
+
+        <main class="mx-auto max-w-4xl px-6 py-12">
             <h1 class="text-3xl font-bold">Tous les posts</h1>
-            <NotificationBell />
-        </div>
-        <p class="mt-2 text-gray-600">
-            Liste de tous les posts, du plus recent au plus ancien.
-        </p>
+            <p class="mt-2 text-gray-600">
+                Liste de tous les posts, du plus recent au plus ancien.
+            </p>
 
-        <PostFilters
-            :filters="filters"
-            :categories="categories"
-            @apply="applyFilters"
-            @reset="resetFilters"
-        />
+            <PostFilters
+                :filters="filters"
+                :categories="categories"
+                @apply="applyFilters"
+                @reset="resetFilters"
+            />
 
-        <div class="mt-6">
-            <PostListPaginated :posts="posts" :auth-user="authUser" />
-        </div>
-    </main>
+            <div class="mt-6">
+                <PostListPaginated :posts="posts" :auth-user="authUser" />
+            </div>
+        </main>
+    </div>
 </template>

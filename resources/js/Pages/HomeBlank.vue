@@ -1,5 +1,5 @@
 <script setup>
-import NotificationBell from '@/Components/Notifications/NotificationBell.vue';
+import AppHeader from '@/Components/Layout/AppHeader.vue';
 import PostListPaginated from '@/Components/Posts/PostListPaginated.vue';
 
 defineProps({
@@ -15,47 +15,31 @@ defineProps({
 </script>
 
 <template>
-    <main class="mx-auto max-w-3xl px-6 py-12">
-        <div class="flex items-start justify-between">
+    <div class="min-h-screen bg-gray-50">
+        <AppHeader />
+
+        <main class="mx-auto max-w-3xl px-6 py-12">
             <h1 class="text-3xl font-bold">Home</h1>
-            <div class="flex items-center gap-3">
-                <a
-                    href="/bookmarks"
-                    class="text-sm text-indigo-600 hover:text-indigo-800"
-                >
-                    Mes favoris
-                </a>
-                <a
-                    href="/profile"
-                    class="text-sm text-indigo-600 hover:text-indigo-800"
-                >
-                    Mon profil
-                </a>
-                <NotificationBell />
-            </div>
-        </div>
-        <p class="mt-4 text-gray-600">Voici tous les posts que tu as ecrits.</p>
-        <p v-if="user" class="mt-2 text-sm text-gray-500">
-            Connecte en tant que {{ user.name }} ({{ user.email }}).
-        </p>
+            <p class="mt-4 text-gray-600">Voici tous les posts que tu as ecrits.</p>
 
-        <section class="mt-8">
-            <div class="mb-4">
-                <a
-                    href="/posts/editor"
-                    class="inline-block rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
-                >
-                    Ecrire un nouveau post
-                </a>
-                <a
-                    href="/posts"
-                    class="ml-2 inline-block rounded-md border border-indigo-600 px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50"
-                >
-                    Voir tous les posts
-                </a>
-            </div>
+            <section class="mt-8">
+                <div class="mb-4">
+                    <a
+                        href="/posts/editor"
+                        class="inline-block rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                    >
+                        Ecrire un nouveau post
+                    </a>
+                    <a
+                        href="/posts"
+                        class="ml-2 inline-block rounded-md border border-indigo-600 px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50"
+                    >
+                        Voir tous les posts
+                    </a>
+                </div>
 
-            <PostListPaginated :posts="posts" :auth-user="user" />
-        </section>
-    </main>
+                <PostListPaginated :posts="posts" :auth-user="user" />
+            </section>
+        </main>
+    </div>
 </template>
