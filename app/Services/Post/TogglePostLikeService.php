@@ -2,9 +2,9 @@
 
 namespace App\Services\Post;
 
+use App\Events\PostLiked;
 use App\Models\Post;
 use App\Models\User;
-use App\Notifications\PostLikedNotification;
 
 class TogglePostLikeService
 {
@@ -30,20 +30,11 @@ class TogglePostLikeService
             'user_id' => $user->id,
         ]);
 
-        $this->notifyPostAuthor($user, $post);
+        PostLiked::dispatch($user, $post);
 
         return [
             'liked_by_auth_user' => true,
             'likes_count' => $post->likes()->count(),
         ];
-    }
-
-    private function notifyPostAuthor(User $liker, Post $post): void
-    {
-        if ($post->user_id === $liker->id) {
-            return;
-        }
-
-        $post->user?->notify(new PostLikedNotification($liker, $post));
     }
 }

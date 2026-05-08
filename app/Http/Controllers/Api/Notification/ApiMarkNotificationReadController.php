@@ -14,18 +14,15 @@ class ApiMarkNotificationReadController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        $found = $user->notifications()->where('id', $notification)->first();
-
-        if ($found === null) {
-            return response()->json(['message' => 'Notification not found'], 404);
-        }
-
-        $found->markAsRead();
+        $notification = $user->notifications()
+            ->where('id', $notification)
+            ->firstOrFail();
+        $notification->markAsRead();
 
         return response()->json([
             'message' => 'Notification marked as read',
             'data' => [
-                'id' => $found->id,
+                'id' => $notification->id,
                 'unread_count' => $user->unreadNotifications()->count(),
             ],
         ]);

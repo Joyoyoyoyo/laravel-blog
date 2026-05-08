@@ -2,9 +2,9 @@
 
 namespace App\Services\Comment;
 
+use App\Events\PostCommented;
 use App\Models\Comment;
 use App\Models\User;
-use App\Notifications\PostCommentedNotification;
 use Illuminate\Support\Facades\Gate;
 
 class UpsertCommentService
@@ -31,19 +31,12 @@ class UpsertCommentService
             'body' => $data['body'],
         ]);
 
-        $this->notifyPostAuthor($user, $comment);
+        $comment->load('post');
 
-        return $comment;
-    }
-
-    private function notifyPostAuthor(User $author, Comment $comment): void
-    {
-        $post = $comment->post;
-
-        if ($post === null || $post->user_id === $author->id) {
-            return;
+        if ($comment->post !== null) {
+            PostCommented::dispatch($user, $comment->post, $comment);
         }
 
-        $post->user?->notify(new PostCommentedNotification($author, $post, $comment));
+        return $comment;
     }
 }

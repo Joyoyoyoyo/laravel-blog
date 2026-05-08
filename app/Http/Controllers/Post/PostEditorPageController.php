@@ -11,7 +11,7 @@ use Inertia\Response;
 
 class PostEditorPageController extends Controller
 {
-    public function __invoke(Request $request, ?Post $post = null): Response
+    public function __invoke(?Post $post = null): Response
     {
         return Inertia::render('Posts/Editor', [
             'post' => $post?->only(['id', 'title', 'body', 'category_id']),
