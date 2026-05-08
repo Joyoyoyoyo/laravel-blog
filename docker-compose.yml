@@ -1,0 +1,53 @@
+services:
+  # 1. L'Application (PHP + Node + Vue)
+  app-location:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel-app-location
+    restart: unless-stopped
+    working_dir: /var/www
+    ports:
+      - "8000:8000" # Pour accéder à Laravel (php artisan serve)
+      - "5173:5173" # Pour le rafraîchissement en direct de Vue 3 (Vite)
+    volumes:
+      - .:/var/www # Monte le code source dans le conteneur pour le développement
+    networks:
+      - laravel-network
+    depends_on:
+      - db-location
+
+  # 2. La Base de Données (MySQL)
+  db-location:
+    image: mysql:8.0
+    container_name: mysql-db-location
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: laravel_db_location
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - db-location-data:/var/lib/mysql
+    networks:
+      - laravel-network
+
+  # 3. L'interface graphique (phpMyAdmin)
+  phpmyadmin-location:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin-location
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_HOST=db-location
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+    networks:
+      - laravel-network
+
+# Définition des ressources partagées
+networks:
+  laravel-network:
+    driver: bridge
+
+volumes:
+  db-location-data: # Volume persistant pour MySQL
