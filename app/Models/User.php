@@ -5,7 +5,9 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -25,6 +27,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'bio',
         'password',
         'role',
     ];
@@ -65,6 +68,22 @@ class User extends Authenticatable
     public function likes(): HasMany
     {
         return $this->hasMany(Like::class);
+    }
+
+    public function likesReceived(): HasManyThrough
+    {
+        return $this->hasManyThrough(Like::class, Post::class);
+    }
+
+    public function bookmarks(): HasMany
+    {
+        return $this->hasMany(Bookmark::class);
+    }
+
+    public function bookmarkedPosts(): BelongsToMany
+    {
+        return $this->belongsToMany(Post::class, 'bookmarks')
+            ->withTimestamps();
     }
 
     /**

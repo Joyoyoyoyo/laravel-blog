@@ -18,7 +18,21 @@ defineProps({
     <main class="mx-auto max-w-3xl px-6 py-12">
         <div class="flex items-start justify-between">
             <h1 class="text-3xl font-bold">Home</h1>
-            <NotificationBell />
+            <div class="flex items-center gap-3">
+                <a
+                    href="/bookmarks"
+                    class="text-sm text-indigo-600 hover:text-indigo-800"
+                >
+                    Mes favoris
+                </a>
+                <a
+                    href="/profile"
+                    class="text-sm text-indigo-600 hover:text-indigo-800"
+                >
+                    Mon profil
+                </a>
+                <NotificationBell />
+            </div>
         </div>
         <p class="mt-4 text-gray-600">Voici tous les posts que tu as ecrits.</p>
         <p v-if="user" class="mt-2 text-sm text-gray-500">

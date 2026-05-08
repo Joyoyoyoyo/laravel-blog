@@ -44,6 +44,18 @@ const props = defineProps({
         type: String,
         default: '',
     },
+    bookmarkedByAuthUser: {
+        type: Boolean,
+        default: false,
+    },
+    bookmarkProcessing: {
+        type: Boolean,
+        default: false,
+    },
+    bookmarkError: {
+        type: String,
+        default: '',
+    },
 });
 
 const emit = defineEmits([
@@ -54,6 +66,7 @@ const emit = defineEmits([
     'edit-body',
     'comment-body',
     'toggle-like',
+    'toggle-bookmark',
 ]);
 </script>
 
@@ -61,7 +74,13 @@ const emit = defineEmits([
     <li class="rounded-lg border border-gray-200 p-4">
         <h2 class="text-lg font-semibold">{{ post.title }}</h2>
         <p class="mt-1 text-xs text-gray-500">
-            Par {{ post.author ?? 'Inconnu' }}
+            Par
+            <a
+                v-if="post.author_id"
+                :href="`/users/${post.author_id}`"
+                class="font-medium text-indigo-600 hover:text-indigo-800"
+            >{{ post.author ?? 'Inconnu' }}</a>
+            <span v-else>{{ post.author ?? 'Inconnu' }}</span>
             <span v-if="post.category">- {{ post.category }}</span>
             - {{ post.created_at }}
         </p>
@@ -85,9 +104,25 @@ const emit = defineEmits([
             <span class="text-xs text-gray-600">
                 {{ likesCount }} like{{ likesCount > 1 ? 's' : '' }}
             </span>
+
+            <button
+                v-if="authUser"
+                type="button"
+                class="ml-2 inline-flex items-center gap-1 rounded border border-amber-300 px-2.5 py-1 text-xs font-medium text-amber-700 hover:bg-amber-50 disabled:opacity-50"
+                :class="{ 'bg-amber-100': bookmarkedByAuthUser }"
+                :disabled="bookmarkProcessing"
+                :title="bookmarkedByAuthUser ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+                @click="emit('toggle-bookmark', post.id)"
+            >
+                <span aria-hidden="true">{{ bookmarkedByAuthUser ? '★' : '☆' }}</span>
+                {{ bookmarkedByAuthUser ? 'Sauvegarde' : 'Sauvegarder' }}
+            </button>
         </div>
         <p v-if="likeError" class="mt-1 text-xs text-red-600">
             {{ likeError }}
+        </p>
+        <p v-if="bookmarkError" class="mt-1 text-xs text-red-600">
+            {{ bookmarkError }}
         </p>
 
         <div v-if="authUser?.id && post.author_id && authUser.id === post.author_id" class="mt-3">

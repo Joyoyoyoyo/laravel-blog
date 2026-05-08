@@ -32,6 +32,13 @@ class PostFeedService
                         fn ($likesQuery) => $likesQuery->where('user_id', $authUser->id),
                         fn ($likesQuery) => $likesQuery->whereRaw('1 = 0'),
                     ),
+                'bookmarks' => fn ($query) => $query
+                    ->select('id', 'post_id', 'user_id')
+                    ->when(
+                        $authUser !== null,
+                        fn ($bookmarksQuery) => $bookmarksQuery->where('user_id', $authUser->id),
+                        fn ($bookmarksQuery) => $bookmarksQuery->whereRaw('1 = 0'),
+                    ),
             ])
             ->withCount('likes')
             ->latest()

@@ -39,6 +39,9 @@ class HandleInertiaRequests extends Middleware
                     ? $user->unreadNotifications()->count()
                     : 0,
             ],
+            'flash' => [
+                'status' => fn () => $request->session()->get('status'),
+            ],
         ];
     }
 }

@@ -21,6 +21,9 @@ const processing = reactive({});
 const likesState = reactive({});
 const likeProcessing = reactive({});
 const likeErrors = reactive({});
+const bookmarksState = reactive({});
+const bookmarkProcessing = reactive({});
+const bookmarkErrors = reactive({});
 
 function ensurePostState(postId) {
     if (!commentForms[postId]) {
@@ -53,6 +56,19 @@ function ensurePostState(postId) {
 
     if (!(postId in likeErrors)) {
         likeErrors[postId] = '';
+    }
+
+    if (!(postId in bookmarksState)) {
+        const post = (props.posts ?? []).find((entry) => entry.id === postId);
+        bookmarksState[postId] = post?.bookmarked_by_auth_user ?? false;
+    }
+
+    if (!(postId in bookmarkProcessing)) {
+        bookmarkProcessing[postId] = false;
+    }
+
+    if (!(postId in bookmarkErrors)) {
+        bookmarkErrors[postId] = '';
     }
 }
 
@@ -159,6 +175,26 @@ async function toggleLike(postId) {
     }
 }
 
+async function toggleBookmark(postId) {
+    if (!props.authUser) {
+        return;
+    }
+
+    ensurePostState(postId);
+    bookmarkProcessing[postId] = true;
+    bookmarkErrors[postId] = '';
+
+    try {
+        const response = await axios.post(`/api/posts/${postId}/bookmark`);
+        const data = response?.data?.data ?? {};
+        bookmarksState[postId] = data.bookmarked_by_auth_user ?? bookmarksState[postId];
+    } catch (e) {
+        bookmarkErrors[postId] = e.response?.data?.message ?? 'Erreur lors de la sauvegarde.';
+    } finally {
+        bookmarkProcessing[postId] = false;
+    }
+}
+
 function getCommentBody(postId) {
     ensurePostState(postId);
     return commentForms[postId].body ?? '';
@@ -197,6 +233,19 @@ function getLikeProcessing(postId) {
 function getLikeError(postId) {
     return likeErrors[postId] ?? '';
 }
+
+function getBookmarkedByAuthUser(postId) {
+    ensurePostState(postId);
+    return bookmarksState[postId] ?? false;
+}
+
+function getBookmarkProcessing(postId) {
+    return bookmarkProcessing[postId] ?? false;
+}
+
+function getBookmarkError(postId) {
+    return bookmarkErrors[postId] ?? '';
+}
 </script>
 
 <template>
@@ -217,6 +266,9 @@ function getLikeError(postId) {
             :liked-by-auth-user="getLikedByAuthUser(post.id)"
             :like-processing="getLikeProcessing(post.id)"
             :like-error="getLikeError(post.id)"
+            :bookmarked-by-auth-user="getBookmarkedByAuthUser(post.id)"
+            :bookmark-processing="getBookmarkProcessing(post.id)"
+            :bookmark-error="getBookmarkError(post.id)"
             @start-edit="startEdit"
             @cancel-edit="cancelEdit"
             @submit-comment="submitComment"
@@ -224,6 +276,7 @@ function getLikeError(postId) {
             @edit-body="setEditingBody"
             @comment-body="setCommentBody"
             @toggle-like="toggleLike"
+            @toggle-bookmark="toggleBookmark"
         />
     </ul>
 </template>

@@ -27,6 +27,9 @@ class PostResource extends JsonResource
             'category' => $this->category?->name,
             'likes_count' => $this->likes_count,
             'liked_by_auth_user' => $this->likes->isNotEmpty(),
+            'bookmarked_by_auth_user' => $this->relationLoaded('bookmarks')
+                ? $this->bookmarks->isNotEmpty()
+                : false,
             'comments' => CommentResource::collection($this->comments)->resolve($request),
         ];
     }
