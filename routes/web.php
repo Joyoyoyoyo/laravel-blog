@@ -31,35 +31,44 @@ Route::get('/', function () {
 Route::get('/register', RegisterPageController::class);
 Route::get('/login', LoginPageController::class)->name('login');
 
-Route::post('/api/login', ApiLoginController::class)->middleware('guest');
-Route::post('/api/logout', ApiLogoutController::class)->middleware('auth')->name('logout');
-Route::post('/api/posts', [ApiUpsertPostController::class, 'store'])->middleware('auth');
-Route::put('/api/posts/{post}', [ApiUpsertPostController::class, 'update'])
-    ->middleware(['auth', 'can:manage-post,post']);
-Route::post('/api/posts/{post}/like', ApiTogglePostLikeController::class)->middleware('auth');
-Route::post('/api/posts/{post}/bookmark', ApiToggleBookmarkController::class)->middleware('auth');
-Route::post('/api/users/{user}/subscribe', ApiToggleUserSubscriptionController::class)->middleware('auth');
-Route::post('/api/comments/save', ApiUpsertCommentController::class)->middleware('auth');
+Route::post('/api/login', ApiLoginController::class)->middleware(['guest', 'throttle:login']);
 
-Route::get('/api/notifications', ApiListNotificationsController::class)->middleware('auth');
-Route::post('/api/notifications/{notification}/read', [ApiMarkNotificationReadController::class, 'single'])
-    ->middleware('auth');
-Route::post('/api/notifications/read-all', [ApiMarkNotificationReadController::class, 'all'])
-    ->middleware('auth');
+Route::middleware('throttle:web-api')->group(function () {
+    Route::post('/api/logout', ApiLogoutController::class)->middleware('auth')->name('logout');
+    Route::post('/api/posts', [ApiUpsertPostController::class, 'store'])->middleware('auth');
+    Route::put('/api/posts/{post}', [ApiUpsertPostController::class, 'update'])
+        ->middleware(['auth', 'can:manage-post,post']);
+    Route::post('/api/posts/{post}/like', ApiTogglePostLikeController::class)->middleware('auth');
+    Route::post('/api/posts/{post}/bookmark', ApiToggleBookmarkController::class)->middleware('auth');
+    Route::post('/api/users/{user}/subscribe', ApiToggleUserSubscriptionController::class)->middleware('auth');
+    Route::post('/api/comments/save', ApiUpsertCommentController::class)->middleware('auth');
 
-Route::get('/notifications', NotificationIndexPageController::class)
-    ->middleware('auth')
-    ->name('notifications.index');
+    Route::get('/api/notifications', ApiListNotificationsController::class)->middleware('auth');
+    Route::post('/api/notifications/{notification}/read', [ApiMarkNotificationReadController::class, 'single'])
+        ->middleware('auth');
+    Route::post('/api/notifications/read-all', [ApiMarkNotificationReadController::class, 'all'])
+        ->middleware('auth');
+});
 
-Route::get('/home', HomePageController::class)->middleware('auth')->name('home');
+Route::middleware(['auth', 'throttle:web-api'])->group(function () {
+    Route::get('/notifications', NotificationIndexPageController::class)->name('notifications.index');
 
-Route::get('/posts/editor', PostEditorPageController::class)
-    ->middleware('auth')
-    ->name('posts.editor.create');
+    Route::get('/home', HomePageController::class)->name('home');
 
-Route::get('/posts/editor/{post}', PostEditorPageController::class)
-    ->middleware(['auth', 'can:manage-post,post'])
-    ->name('posts.editor.edit');
+    Route::get('/posts/editor', PostEditorPageController::class)->name('posts.editor.create');
+
+    Route::get('/posts/editor/{post}', PostEditorPageController::class)
+        ->middleware('can:manage-post,post')
+        ->name('posts.editor.edit');
+
+    Route::get('/bookmarks', BookmarkIndexPageController::class)->name('bookmarks.index');
+
+    Route::get('/profile', ProfileEditPageController::class)->name('profile.edit');
+    Route::put('/api/profile', [ApiProfileController::class, 'update'])->name('profile.update');
+    Route::put('/api/profile/password', [ApiProfileController::class, 'updatePassword'])
+        ->name('profile.password.update');
+    Route::delete('/api/profile', [ApiProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
 Route::get('/posts', PostIndexPageController::class)->name('posts.index');
 
@@ -67,15 +76,3 @@ Route::get('/leaderboard/subscribers', TopSubscribersLeaderboardController::clas
 
 Route::get('/users/{user}/subscribers', UserSubscribersPageController::class)->name('users.subscribers');
 Route::get('/users/{user}', UserProfilePageController::class)->name('users.show');
-
-Route::get('/bookmarks', BookmarkIndexPageController::class)
-    ->middleware('auth')
-    ->name('bookmarks.index');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', ProfileEditPageController::class)->name('profile.edit');
-    Route::put('/api/profile', [ApiProfileController::class, 'update'])->name('profile.update');
-    Route::put('/api/profile/password', [ApiProfileController::class, 'updatePassword'])
-        ->name('profile.password.update');
-    Route::delete('/api/profile', [ApiProfileController::class, 'destroy'])->name('profile.destroy');
-});
