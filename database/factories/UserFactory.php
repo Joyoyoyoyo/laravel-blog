@@ -42,4 +42,26 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    /** Users this user follows (subscriber → subscribed_user). */
+    public function subscribingToUsers(int $count = 3): static
+    {
+        return $this->afterCreating(function (User $user) use ($count): void {
+            User::factory()
+                ->count($count)
+                ->create()
+                ->each(fn (User $target) => $user->subscribedUsers()->attach($target));
+        });
+    }
+
+    /** Users who subscribe to this profile. */
+    public function withSubscribers(int $count = 3): static
+    {
+        return $this->afterCreating(function (User $user) use ($count): void {
+            User::factory()
+                ->count($count)
+                ->create()
+                ->each(fn (User $subscriber) => $subscriber->subscribedUsers()->attach($user));
+        });
+    }
 }

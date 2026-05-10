@@ -21,6 +21,8 @@ class DatabaseSeeder extends Seeder
         $categories = Category::factory()->count(10)->create();
         $users = User::factory()->count(100)->create();
 
+        $this->call(UserSubscriptionSeeder::class);
+
         $users->each(function (User $user) use ($categories): void {
             Post::factory()
                 ->count(10)

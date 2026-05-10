@@ -9,15 +9,18 @@ use App\Http\Controllers\Api\Post\ApiToggleBookmarkController;
 use App\Http\Controllers\Api\Post\ApiTogglePostLikeController;
 use App\Http\Controllers\Api\Post\ApiUpsertPostController;
 use App\Http\Controllers\Api\Profile\ApiProfileController;
+use App\Http\Controllers\Api\User\ApiToggleUserSubscriptionController;
 use App\Http\Controllers\Bookmark\BookmarkIndexPageController;
 use App\Http\Controllers\Auth\LoginPageController;
 use App\Http\Controllers\Auth\RegisterPageController;
 use App\Http\Controllers\HomePageController;
+use App\Http\Controllers\Leaderboard\TopSubscribersLeaderboardController;
 use App\Http\Controllers\Notification\NotificationIndexPageController;
 use App\Http\Controllers\Post\PostEditorPageController;
 use App\Http\Controllers\Post\PostIndexPageController;
 use App\Http\Controllers\Profile\ProfileEditPageController;
 use App\Http\Controllers\User\UserProfilePageController;
+use App\Http\Controllers\User\UserSubscribersPageController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -35,6 +38,7 @@ Route::put('/api/posts/{post}', [ApiUpsertPostController::class, 'update'])
     ->middleware(['auth', 'can:manage-post,post']);
 Route::post('/api/posts/{post}/like', ApiTogglePostLikeController::class)->middleware('auth');
 Route::post('/api/posts/{post}/bookmark', ApiToggleBookmarkController::class)->middleware('auth');
+Route::post('/api/users/{user}/subscribe', ApiToggleUserSubscriptionController::class)->middleware('auth');
 Route::post('/api/comments/save', ApiUpsertCommentController::class)->middleware('auth');
 
 Route::get('/api/notifications', ApiListNotificationsController::class)->middleware('auth');
@@ -59,6 +63,9 @@ Route::get('/posts/editor/{post}', PostEditorPageController::class)
 
 Route::get('/posts', PostIndexPageController::class)->name('posts.index');
 
+Route::get('/leaderboard/subscribers', TopSubscribersLeaderboardController::class)->name('leaderboard.subscribers');
+
+Route::get('/users/{user}/subscribers', UserSubscribersPageController::class)->name('users.subscribers');
 Route::get('/users/{user}', UserProfilePageController::class)->name('users.show');
 
 Route::get('/bookmarks', BookmarkIndexPageController::class)

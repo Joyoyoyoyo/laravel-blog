@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\UnreadNotificationsCountCache;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -36,7 +37,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $user?->only(['id', 'name', 'email']),
                 'unread_notifications_count' => fn () => $user
-                    ? $user->unreadNotifications()->count()
+                    ? UnreadNotificationsCountCache::get($user)
                     : 0,
             ],
             'flash' => [

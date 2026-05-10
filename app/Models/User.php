@@ -86,6 +86,26 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
+    public function subscribedUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            User::class,
+            'user_subscriptions',
+            'subscriber_id',
+            'subscribed_user_id'
+        )->withTimestamps();
+    }
+
+    public function subscribers(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            User::class,
+            'user_subscriptions',
+            'subscribed_user_id',
+            'subscriber_id'
+        )->withTimestamps();
+    }
+
     /**
      * @return list<string>
      */

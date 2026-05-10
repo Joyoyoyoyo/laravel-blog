@@ -1,6 +1,6 @@
 <script setup>
 import AppHeader from '@/Components/Layout/AppHeader.vue';
-import { useForm, usePage } from '@inertiajs/vue3';
+import { Link, useForm, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const props = defineProps({
@@ -63,6 +63,17 @@ function submitDelete() {
                 <h1 class="text-3xl font-bold">Mon profil</h1>
                 <p class="mt-1 text-sm text-gray-500">
                     Modifie tes informations, ton mot de passe ou supprime ton compte.
+                </p>
+                <p class="mt-3 text-sm text-gray-700">
+                    <Link
+                        :href="`/users/${profile.id}/subscribers`"
+                        class="font-semibold tabular-nums text-indigo-600 hover:text-indigo-800 hover:underline"
+                    >
+                        {{ profile.subscribers_count ?? 0 }}
+                        {{
+                            (profile.subscribers_count ?? 0) === 1 ? ' abonné' : ' abonnés'
+                        }}
+                    </Link>
                 </p>
             </div>
 

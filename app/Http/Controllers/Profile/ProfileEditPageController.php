@@ -12,6 +12,7 @@ class ProfileEditPageController extends Controller
     public function __invoke(Request $request): Response
     {
         $user = $request->user();
+        $user->loadCount(['subscribers']);
 
         return Inertia::render('Profile/Edit', [
             'profile' => [
@@ -19,6 +20,7 @@ class ProfileEditPageController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 'bio' => $user->bio,
+                'subscribers_count' => $user->subscribers_count,
             ],
         ]);
     }

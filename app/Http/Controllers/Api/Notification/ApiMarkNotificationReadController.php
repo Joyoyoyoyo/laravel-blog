@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Notification;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\UnreadNotificationsCountCache;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -23,7 +24,7 @@ class ApiMarkNotificationReadController extends Controller
             'message' => 'Notification marked as read',
             'data' => [
                 'id' => $notification->id,
-                'unread_count' => $user->unreadNotifications()->count(),
+                'unread_count' => UnreadNotificationsCountCache::get($user),
             ],
         ]);
     }
@@ -38,7 +39,7 @@ class ApiMarkNotificationReadController extends Controller
         return response()->json([
             'message' => 'All notifications marked as read',
             'data' => [
-                'unread_count' => 0,
+                'unread_count' => UnreadNotificationsCountCache::get($user),
             ],
         ]);
     }

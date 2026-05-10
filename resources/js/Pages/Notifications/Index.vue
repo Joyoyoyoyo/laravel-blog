@@ -1,6 +1,6 @@
 <script setup>
 import AppHeader from '@/Components/Layout/AppHeader.vue';
-import { Link } from '@inertiajs/vue3';
+import InertiaPaginationLinks from '@/Components/InertiaPaginationLinks.vue';
 import { reactive } from 'vue';
 import { NOTIFICATION_TYPES } from '@/Utils/notificationTypes';
 import {
@@ -61,22 +61,7 @@ const items = reactive(props.notifications.data.map((n) => ({ ...n })));
                     </li>
                 </ul>
 
-                <nav v-if="notifications.links?.length > 3" class="mt-6 flex flex-wrap gap-2">
-                    <template v-for="link in notifications.links" :key="link.label">
-                        <Link
-                            v-if="link.url"
-                            :href="link.url"
-                            class="rounded border px-3 py-1 text-xs"
-                            :class="link.active ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-gray-300 text-gray-700 hover:bg-gray-100'"
-                            v-html="link.label"
-                        />
-                        <span
-                            v-else
-                            class="rounded border border-gray-200 px-3 py-1 text-xs text-gray-400"
-                            v-html="link.label"
-                        />
-                    </template>
-                </nav>
+                <InertiaPaginationLinks :links="notifications.links" />
             </section>
         </main>
     </div>

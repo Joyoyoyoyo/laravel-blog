@@ -27,6 +27,7 @@ const navLinks = computed(() => {
     const links = [
         { label: 'Accueil', href: isAuthenticated.value ? '/home' : '/', exact: true },
         { label: 'Tous les posts', href: '/posts' },
+        { label: 'Top abonnés', href: '/leaderboard/subscribers', exact: true },
     ];
 
     if (isAuthenticated.value) {

@@ -14,7 +14,7 @@ class UserProfilePageController extends Controller
 {
     public function __invoke(Request $request, User $user, PostFeedService $feed): Response
     {
-        $user->loadCount(['posts', 'likesReceived']);
+        $user->loadCount(['posts', 'likesReceived', 'subscribers']);
 
         return Inertia::render('Users/Show', [
             'user' => UserProfileResource::make($user)->resolve($request),
